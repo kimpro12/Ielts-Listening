@@ -6,23 +6,16 @@ def Clear():
 def Stop():
     sys.exit()
 
-def PreparingFile(apikey, url, content):
-    print("Creating file audio...")
-
-    headers = {
-        "Content-Type": "application/json",
-        "Accept": "audio/wav"
+def PreparingFile(apikey, url, content, Speed, language):
+    headers = {"Accept": "audio/wav"}
+    params = {
+        "text": content,
+        "voice": language,
+        "rate_percentage": Speed
     }
-
-    data = {
-        "text": content
-    }
-
-    json_data = json.dumps(data)
-
     auth = ("apikey", apikey)
 
-    response = requests.post(url, headers=headers, data=json_data, auth=auth)
+    response = requests.get(url, headers=headers, params=params, auth=auth)
 
     if response.status_code == 200:
         with open("test.wav", "wb") as output_file:
@@ -47,9 +40,9 @@ def play(length, language, nameorphone, randomaccentornot):
     apikey = ""
     url = ""
     with open('apikey.txt', 'r') as file:
-        apikey += file.read()
+        apikey += file.read().rstrip()
     with open('url.txt', 'r') as file:
-        url += file.read()
+        url += file.read().rstrip()
     Speed = input("Type the speed you want, Press Enter to set normal mode, or type the percantage you want to increase or decrease (ex: 20 is increasing 20%, -20 is decreasing 20%): ")
     if Speed == "":
         Speed = "0"
@@ -63,8 +56,8 @@ def play(length, language, nameorphone, randomaccentornot):
                 if (Speed == ""):
                     Speed = "0"
                     break
-    url += "/v1/synthesize?voice=" + language + "&rate_percentage=" + Speed + "\""
-    PreparingFile(apikey, url, content)
+    url += "/v1/synthesize"
+    PreparingFile(apikey, url, content, Speed, language)
     Check = input("Press Enter to start now, and fill your solution below while listening: ")
     if Check != "":
     	    Stop()
